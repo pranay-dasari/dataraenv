@@ -1,3 +1,13 @@
+---
+title: DataraEnv Demo
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # DataraEnv — Synthetic Data Engineering Environment
 
 **DataraEnv** is an [OpenEnv](https://openenv.dev)-compliant reinforcement learning environment that simulates real-world synthetic data engineering tasks under India's **DPDP (Digital Personal Data Protection) Act, 2023**.
