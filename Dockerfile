@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY datara_env/ /app/datara_env/
 COPY openenv.yaml /app/
 COPY inference.py /app/
-COPY demo_agent.py /app/
+COPY scripts/demo_agent.py /app/
 COPY README.md /app/
 
 # Set ownership
