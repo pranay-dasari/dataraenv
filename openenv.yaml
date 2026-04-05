@@ -1,0 +1,35 @@
+name: datara-openenv
+version: 0.1.0
+description: >
+  DataraEnv: an OpenEnv environment simulating realistic synthetic data engineering
+  tasks under India's DPDP regime (PII detection, relational config, evaluation).
+
+image: datara-openenv:latest
+app_port: 8000
+base_path: /
+
+entrypoint:
+  - uvicorn
+  - datara_env.server:app
+  - --host
+  - 0.0.0.0
+  - --port
+  - "8000"
+
+tags:
+  - openenv
+  - data
+  - synthetic-data
+  - dpdp
+  - enterprise
+
+tasks:
+  - id: pii_masking_easy
+    description: Identify PII columns and choose DPDP-safe masking strategies.
+    difficulty: easy
+  - id: relational_config_medium
+    description: Design relational synthetic data generation config preserving PK/FK.
+    difficulty: medium
+  - id: eval_review_hard
+    description: Review synthetic data evaluation and decide deployability.
+    difficulty: hard
