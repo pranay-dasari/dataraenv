@@ -22,7 +22,7 @@ from datara_env.models import DataraAction
 LLM_BASE_URL      = os.getenv("LLM_BASE_URL", "https://router.huggingface.co/v1")
 LLM_API_KEY       = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen3-32B")
-ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "http://localhost:8000")
+ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE       = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
