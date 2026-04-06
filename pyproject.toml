@@ -38,12 +38,13 @@ classifiers = [
 
 # Exact runtime dependencies from requirements.txt
 dependencies = [
-    "fastapi==0.115.0",
-    "uvicorn[standard]==0.30.0",
-    "pydantic==2.7.0",
-    "openai==1.30.0",
-    "requests==2.32.0",
-    "python-dotenv>=1.0.0"
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "openai>=1.30.0",
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.0",
+    "openenv-core>=0.2.0"
 ]
 
 [project.urls]
@@ -82,12 +83,13 @@ docs = [
 # You can define a script here if you create a python entry point function in the future.
 # [project.scripts]
 # dataraenv-server = "datara_env.scripts:run_server"
-# dataraenv-eval = "inference:main"
+[project.scripts]
+openenv-server = "server.app:main"
 
 # Tells setuptools where to find packages
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["datara_env*"]
+include = ["datara_env*", "server*"]
 
 # Black code formatter configuration
 [tool.black]
