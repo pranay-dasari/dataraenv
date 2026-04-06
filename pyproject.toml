@@ -84,12 +84,13 @@ docs = [
 # [project.scripts]
 # dataraenv-server = "datara_env.scripts:run_server"
 [project.scripts]
-openenv-server = "server.app:main"
+server = "server.app:main"
 
 # Tells setuptools where to find packages
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["datara_env*", "server*"]
+include = ["datara_env*"]
+exclude = ["server*"]
 
 # Black code formatter configuration
 [tool.black]
