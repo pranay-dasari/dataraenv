@@ -235,6 +235,7 @@ def fallback_action(observation: dict) -> dict:
 # ── Episode runner ─────────────────────────────────────────────────────────────
 
 def run_episode(task_id: str) -> float:
+    print(f"[START] task={task_id}", flush=True)
     try:
         reset_resp = requests.post(
             f"{ENV_BASE_URL}/reset",
@@ -245,8 +246,10 @@ def run_episode(task_id: str) -> float:
         obs = reset_resp.json()
     except Exception as e:
         print(f"  Failed to connect or reset env for {task_id}: {e}")
+        print(f"[END] task={task_id} score=0.0 steps=0", flush=True)
         return 0.0
 
+    steps_taken = 0
     for step in range(MAX_STEPS):
         if obs.get("done", False):
             break
@@ -279,11 +282,15 @@ def run_episode(task_id: str) -> float:
         score    = obs.get("score_so_far", 0.0)
         feedback = obs.get("feedback", "")
         print(f"    step {step + 1}: score={score:.3f}  feedback={feedback[:70]}")
+        print(f"[STEP] step={step + 1} reward={score}", flush=True)
+        steps_taken = step + 1
 
         if result.get("done", False):
             break
 
-    return float(obs.get("score_so_far", 0.0))
+    final_score = float(obs.get("score_so_far", 0.0))
+    print(f"[END] task={task_id} score={final_score} steps={steps_taken}", flush=True)
+    return final_score
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
