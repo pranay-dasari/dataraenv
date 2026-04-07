@@ -17,10 +17,10 @@ except ImportError:
 from datara_env.models import DataraAction
 
 
-# ── Configuration ──────────────────────────────────────────────────────────────
+# ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-LLM_BASE_URL      = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
-LLM_API_KEY       = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+API_BASE_URL      = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY       = os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY")
 MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen3-32B")
 ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
@@ -297,7 +297,7 @@ def run_episode(task_id: str) -> float:
 
 def main():
     # Key check here — not at import time — so this file is safe to import in tests
-    if not LLM_API_KEY:
+    if not API_KEY:
         print()
         print("  ERROR: No API key found.")
         print()
@@ -309,7 +309,7 @@ def main():
 
     global client
     try:
-        client = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
+        client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     except Exception as e:
         print(f"  ERROR: Failed to initialize OpenAI client: {e}")
         print("  Proceeding with fallback actions.")
@@ -324,7 +324,7 @@ def main():
     print()
     print("DataraEnv baseline evaluation")
     print(f"  Model:           {MODEL_NAME}")
-    print(f"  LLM base URL:    {LLM_BASE_URL}")
+    print(f"  LLM base URL:    {API_BASE_URL}")
     print(f"  Max steps:       {MAX_STEPS}")
     print(f"  Episodes/task:   {EPISODES_PER_TASK}")
     print(f"  Environment URL: {ENV_BASE_URL}")
