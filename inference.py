@@ -235,13 +235,17 @@ def fallback_action(observation: dict) -> dict:
 # ── Episode runner ─────────────────────────────────────────────────────────────
 
 def run_episode(task_id: str) -> float:
-    reset_resp = requests.post(
-        f"{ENV_BASE_URL}/reset",
-        params={"task_id": task_id},
-        timeout=30,
-    )
-    reset_resp.raise_for_status()
-    obs = reset_resp.json()
+    try:
+        reset_resp = requests.post(
+            f"{ENV_BASE_URL}/reset",
+            params={"task_id": task_id},
+            timeout=30,
+        )
+        reset_resp.raise_for_status()
+        obs = reset_resp.json()
+    except Exception as e:
+        print(f"  Failed to connect or reset env for {task_id}: {e}")
+        return 0.0
 
     for step in range(MAX_STEPS):
         if obs.get("done", False):
@@ -259,13 +263,17 @@ def run_episode(task_id: str) -> float:
             print(f"  Using fallback action for step {step + 1}")
             action = fallback_action(obs)
 
-        result_resp = requests.post(
-            f"{ENV_BASE_URL}/step",
-            json=action,
-            timeout=30,
-        )
-        result_resp.raise_for_status()
-        result = result_resp.json()
+        try:
+            result_resp = requests.post(
+                f"{ENV_BASE_URL}/step",
+                json=action,
+                timeout=30,
+            )
+            result_resp.raise_for_status()
+            result = result_resp.json()
+        except Exception as e:
+            print(f"  Failed to post step to env: {e}")
+            break
 
         obs      = result.get("observation", {})
         score    = obs.get("score_so_far", 0.0)
@@ -293,7 +301,12 @@ def main():
         sys.exit(1)
 
     global client
-    client = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
+    try:
+        client = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
+    except Exception as e:
+        print(f"  ERROR: Failed to initialize OpenAI client: {e}")
+        print("  Proceeding with fallback actions.")
+        client = None
 
     tasks: List[str] = [
         "pii_masking_easy",
