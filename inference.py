@@ -19,19 +19,24 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_KEY           = os.environ["API_KEY"]
-API_BASE_URL      = os.environ["API_BASE_URL"]
-MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+API_KEY           = os.environ["API_KEY"].strip()
+API_BASE_URL      = os.environ["API_BASE_URL"].strip()
+if not API_BASE_URL.startswith("http"):
+    API_BASE_URL = "http://" + API_BASE_URL
+MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct").strip()
 ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE       = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
-client = OpenAI(
-    api_key=API_KEY,
-    base_url=API_BASE_URL
-)
-
+client = None
+try:
+    client = OpenAI(
+        api_key=API_KEY,
+        base_url=API_BASE_URL
+    )
+except Exception as e:
+    print(f"[LLM_INIT_ERROR] Exception initializing client: {e}", flush=True)
 
 # ── System prompt ──────────────────────────────────────────────────────────────
 # Written to be unambiguous for smaller models (Llama-3.1-8B, Mistral, etc.)
@@ -143,18 +148,22 @@ def call_model(observation: dict) -> DataraAction:
 
     print(f"[LLM_CALL] model={MODEL_NAME} base_url from env is present", flush=True)
 
-    resp = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": user_prompt},
-        ],
-        temperature=TEMPERATURE,
-        max_tokens=2048,
-        # NOTE: response_format with json_schema is an OpenAI-only feature.
-        # It is NOT set here because HuggingFace router and most open models
-        # do not support it and will return a 422 error.
-    )
+    if client is None:
+        raise RuntimeError("OpenAI client could not be initialized.")
+
+    try:
+        resp = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user",   "content": user_prompt},
+            ],
+            temperature=TEMPERATURE,
+            max_tokens=2048,
+        )
+    except Exception as e:
+        print(f"  [LLM_API_ERROR] Request failed: {e}", flush=True)
+        raise
 
     content = resp.choices[0].message.content or "{}"
     original_content = content
