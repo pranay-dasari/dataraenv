@@ -6,13 +6,6 @@ import requests
 from typing import List
 from openai import OpenAI
 
-# Load .env file if present (pip install python-dotenv)
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
 # Single import — DataraAction is defined once in models.py, used everywhere
 from datara_env.models import DataraAction
 
