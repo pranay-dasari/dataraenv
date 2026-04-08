@@ -19,18 +19,18 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_BASE_URL      = os.environ["API_BASE_URL"]
 API_KEY           = os.environ["API_KEY"]
-MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen3-32B")
+API_BASE_URL      = os.environ["API_BASE_URL"]
+MODEL_NAME        = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE       = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
-# Client is initialised inside main() after the key check passes.
-# Keeping it None here means this file can be safely imported in tests
-# without a real API key being set in the environment.
-client = None
+client = OpenAI(
+    api_key=API_KEY,
+    base_url=API_BASE_URL
+)
 
 
 # ── System prompt ──────────────────────────────────────────────────────────────
@@ -140,6 +140,8 @@ def call_model(observation: dict) -> DataraAction:
         "Respond with ONLY a JSON object. "
         "The 'message' field must contain your task answer as a JSON string."
     )
+
+    print(f"[LLM_CALL] model={MODEL_NAME} base_url from env is present", flush=True)
 
     resp = client.chat.completions.create(
         model=MODEL_NAME,
@@ -296,24 +298,7 @@ def run_episode(task_id: str) -> float:
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def main():
-    # Key check here — not at import time — so this file is safe to import in tests
-    if not API_KEY:
-        print()
-        print("  ERROR: No API key found.")
-        print()
-        print("  Set one of these environment variables before running:")
-        print("    export HF_TOKEN='hf_...'           (HuggingFace — free tier available)")
-        print("    export OPENAI_API_KEY='sk-...'      (OpenAI)")
-        print()
-        sys.exit(1)
-
-    global client
-    try:
-        client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
-    except Exception as e:
-        print(f"  ERROR: Failed to initialize OpenAI client: {e}")
-        print("  Proceeding with fallback actions.")
-        client = None
+    # Strict API check handled at module level via os.environ["API_KEY"]
 
     tasks: List[str] = [
         "pii_masking_easy",
