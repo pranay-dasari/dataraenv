@@ -14,8 +14,6 @@ from datara_env.models import DataraAction
 
 API_KEY           = os.environ["API_KEY"].strip()
 API_BASE_URL      = os.environ["API_BASE_URL"].strip()
-if not API_BASE_URL.startswith("http"):
-    API_BASE_URL = "http://" + API_BASE_URL
 MODEL_NAME        = os.getenv("MODEL_NAME", "").strip()
 ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
