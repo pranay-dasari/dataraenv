@@ -20,11 +20,14 @@ MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
-
-client = OpenAI(
-    api_key=API_KEY,
-    base_url=API_BASE_URL
-)
+try:
+    client = OpenAI(
+        api_key=API_KEY,
+        base_url=API_BASE_URL
+    )
+except Exception as e:
+    print(f"[LLM_INIT_ERROR] Exception initializing client: {e}", flush=True)
+    sys.exit(1)
 
 # ── System prompt ──────────────────────────────────────────────────────────────
 # Written to be unambiguous for smaller models (Llama-3.1-8B, Mistral, etc.)
