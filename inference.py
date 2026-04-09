@@ -27,7 +27,6 @@ try:
     )
 except Exception as e:
     print(f"[LLM_INIT_ERROR] Exception initializing client: {e}", flush=True)
-    sys.exit(1)
 
 # ── System prompt ──────────────────────────────────────────────────────────────
 # Written to be unambiguous for smaller models (Llama-3.1-8B, Mistral, etc.)
