@@ -12,12 +12,12 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_KEY           = os.environ["API_KEY"]
-API_BASE_URL      = os.environ["API_BASE_URL"]
-MODEL_NAME        = os.getenv("MODEL_NAME", "")
-ENV_BASE_URL      = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
-MAX_STEPS         = int(os.getenv("MAX_STEPS", "5"))
-TEMPERATURE       = float(os.getenv("TEMPERATURE", "0.1"))
+API_KEY = os.environ["API_KEY"]
+API_BASE_URL = os.environ["API_BASE_URL"]
+MODEL_NAME = os.getenv("MODEL_NAME", "")
+ENV_BASE_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
+MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
+TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
 client = None
