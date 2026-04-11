@@ -1,10 +1,14 @@
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 pydantic==2.7.0
-openai==1.30.0
-requests==2.32.0
-python-dotenv>=1.0.0
+# openai==1.30.0
+# requests==2.32.0
+# python-dotenv>=1.0.0
 
 # openenv-core is the validator CLI — install separately on your dev machine only:
 # pip install openenv-core
 # Then run: openenv validate openenv.yaml
+
+openai>=1.50.0
+requests==2.32.0
+python-dotenv>=1.0.0

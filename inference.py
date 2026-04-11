@@ -5,7 +5,8 @@ import re
 import requests
 from typing import List
 from openai import OpenAI
-
+from dotenv import load_dotenv
+load_dotenv()  
 # Single import — DataraAction is defined once in models.py, used everywhere
 from datara_env.models import DataraAction
 
