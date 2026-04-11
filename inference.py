@@ -289,7 +289,8 @@ def run_episode(task_id: str) -> float:
             break
 
         obs      = result.get("observation", {})
-        score    = obs.get("score_so_far", 0.0)
+        score    = float(obs.get("score_so_far", 0.0))
+        score    = max(0.001, min(0.999, score))
         feedback = obs.get("feedback", "")
         print(f"step {step + 1}: score={score:.3f}  feedback={feedback[:70]}")
         print(f"[STEP] step={step + 1} reward={score}", flush=True)
@@ -299,6 +300,7 @@ def run_episode(task_id: str) -> float:
             break
 
     final_score = float(obs.get("score_so_far", 0.0))
+    final_score = max(0.001, min(0.999, final_score))
     print(f"[END] task={task_id} score={final_score} steps={steps_taken}", flush=True)
     return final_score
 
@@ -315,6 +317,8 @@ def main():
     ]
 
     print()
+    print("BASE:", os.getenv("API_BASE_URL"))
+    print("TOKEN:", os.getenv("HF_TOKEN"))
     print("DataraEnv baseline evaluation")
     print(f"  Model:           {MODEL_NAME}")
     print(f"  LLM base URL:    {API_BASE_URL}")
