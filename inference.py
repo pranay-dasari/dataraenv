@@ -267,12 +267,12 @@ def run_episode(task_id: str) -> float:
             action = action_obj.model_dump()
             # Safety net: if message is still empty after all fixes, use fallback
             if not action.get("message"):
-                print(f"  Warning: empty message at step {step + 1}, using fallback")
-                action = fallback_action(obs)
+                print(f"Warning: empty message at step {step + 1}")
+                # action = fallback_action(obs)
         except Exception as e:
-            print(f"  LLM call failed ({type(e).__name__}): {str(e)[:120]}")
-            print(f"  Using fallback action for step {step + 1}")
-            action = fallback_action(obs)
+            print(f"LLM call failed ({type(e).__name__}): {str(e)[:120]}")
+            # print(f"Using fallback action for step {step + 1}")
+            # action = fallback_action(obs)
 
         try:
             result_resp = requests.post(
@@ -283,13 +283,13 @@ def run_episode(task_id: str) -> float:
             result_resp.raise_for_status()
             result = result_resp.json()
         except Exception as e:
-            print(f"  Failed to post step to env: {e}")
+            print(f"Failed to post step to env: {e}")
             break
 
         obs      = result.get("observation", {})
         score    = obs.get("score_so_far", 0.0)
         feedback = obs.get("feedback", "")
-        print(f"    step {step + 1}: score={score:.3f}  feedback={feedback[:70]}")
+        print(f"step {step + 1}: score={score:.3f}  feedback={feedback[:70]}")
         print(f"[STEP] step={step + 1} reward={score}", flush=True)
         steps_taken = step + 1
 
