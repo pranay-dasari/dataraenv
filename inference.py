@@ -20,14 +20,26 @@ MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
+client = None  # ← ensure it's always defined
+
 try:
     client = OpenAI(
         api_key=API_KEY,
         base_url=API_BASE_URL
     )
-except Exception as e:
-    print(f"[LLM_INIT_ERROR] Exception initializing client: {e}", flush=True)
 
+    # 🔥 Force a real call through proxy
+    client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[{"role": "user", "content": "hi"}],
+        max_tokens=5
+    )
+
+    print("[LLM_INIT] Client initialized and proxy reachable", flush=True)
+
+except Exception as e:
+    print(f"[LLM_INIT_ERROR] {e}", flush=True)
+    sys.exit(1)  # ← HARD FAIL (VERY IMPORTANT)
 # ── System prompt ──────────────────────────────────────────────────────────────
 # Written to be unambiguous for smaller models (Llama-3.1-8B, Mistral, etc.)
 # that tend to return the task answer directly and skip the outer wrapper.
