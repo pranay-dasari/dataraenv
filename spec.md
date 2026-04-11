@@ -532,7 +532,7 @@ API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 
-ENV_SERVER_URL = os.getenv("DATARA_ENV_URL", "http://localhost:8000")
+ENV_BASE_URL = os.getenv("DATARA_ENV_URL", "http://localhost:8000")
 
 MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
@@ -574,7 +574,7 @@ def call_model(observation: dict) -> str:
 def run_episode(task_id: str) -> float:
     # reset
     obs = requests.post(
-        f"{ENV_SERVER_URL}/reset",
+        f"{ENV_BASE_URL}/reset",
         params={"task_id": task_id},
         timeout=30,
     ).json()
@@ -587,7 +587,7 @@ def run_episode(task_id: str) -> float:
         action = {"message": response_text}
 
         result = requests.post(
-            f"{ENV_SERVER_URL}/step",
+            f"{ENV_BASE_URL}/step",
             json=action,
             timeout=30,
         ).json()
