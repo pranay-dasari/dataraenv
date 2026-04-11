@@ -12,15 +12,14 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_KEY = os.environ["API_KEY"]
-API_BASE_URL = os.environ["API_BASE_URL"]
+API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
-ENV_BASE_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
+ENV_SERVER_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
-client = None  # ← ensure it's always defined
 
 try:
     client = OpenAI(
@@ -28,7 +27,6 @@ try:
         base_url=API_BASE_URL
     )
 
-    # 🔥 Force a real call through proxy
     client.chat.completions.create(
         model=MODEL_NAME,
         messages=[{"role": "user", "content": "hi"}],
@@ -251,7 +249,7 @@ def run_episode(task_id: str) -> float:
     print(f"[START] task={task_id}", flush=True)
     try:
         reset_resp = requests.post(
-            f"{ENV_BASE_URL}/reset",
+            f"{ENV_SERVER_URL}/reset",
             params={"task_id": task_id},
             timeout=30,
         )
@@ -281,7 +279,7 @@ def run_episode(task_id: str) -> float:
 
         try:
             result_resp = requests.post(
-                f"{ENV_BASE_URL}/step",
+                f"{ENV_SERVER_URL}/step",
                 json=action,
                 timeout=30,
             )
@@ -323,7 +321,7 @@ def main():
     print(f"  LLM base URL:    {API_BASE_URL}")
     print(f"  Max steps:       {MAX_STEPS}")
     print(f"  Episodes/task:   {EPISODES_PER_TASK}")
-    print(f"  Environment URL: {ENV_BASE_URL}")
+    print(f"  Environment URL: {ENV_SERVER_URL}")
     print("-" * 50)
 
     all_scores = []
