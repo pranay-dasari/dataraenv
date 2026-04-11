@@ -12,8 +12,8 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
-API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY = os.environ["API_KEY"]
+API_BASE_URL = os.environ["API_BASE_URL"]
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
 ENV_SERVER_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
