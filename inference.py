@@ -5,6 +5,9 @@ import re
 import requests
 from typing import List
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Single import — DataraAction is defined once in models.py, used everywhere
 from datara_env.models import DataraAction
@@ -12,31 +15,28 @@ from datara_env.models import DataraAction
 
 # ── Configuration ──────────────────────────SSSS────────────────────────────────────
 
-API_KEY = os.environ["API_KEY"]
-API_BASE_URL = os.environ["API_BASE_URL"]
+API_KEY = os.environ.get("HF_TOKEN", os.environ.get("API_KEY"))
+API_BASE_URL = os.environ.get("API_BASE_URL")
 MODEL_NAME = os.environ.get("MODEL_NAME", "meta-llama/Llama-3.1-8B-Instruct")
-ENV_SERVER_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
+ENV_BASE_URL = os.getenv("DATARA_ENV_URL", "https://pranay1010-dataraenv-demo.hf.space")
 MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
+client = OpenAI(
+    api_key=os.environ["HF_TOKEN"],
+    base_url=os.environ["API_BASE_URL"],
+)
 
 try:
-    client = OpenAI(
-        api_key=API_KEY,
-        base_url=API_BASE_URL
-    )
-
-    client.chat.completions.create(
+    response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[{"role": "user", "content": "hi"}],
         max_tokens=5
     )
-
-    print("[LLM_INIT] Client initialized and proxy reachable", flush=True)
-
 except Exception as e:
-    print(f"[LLM_INIT_ERROR] {e}", flush=True)
+    print(f"[DEBUG] LLM error: {e}", flush=True)
+    raise
     sys.exit(1)  # ← HARD FAIL (VERY IMPORTANT)
 # ── System prompt ──────────────────────────────────────────────────────────────
 # Written to be unambiguous for smaller models (Llama-3.1-8B, Mistral, etc.)
@@ -249,7 +249,7 @@ def run_episode(task_id: str) -> float:
     print(f"[START] task={task_id}", flush=True)
     try:
         reset_resp = requests.post(
-            f"{ENV_SERVER_URL}/reset",
+            f"{ENV_BASE_URL}/reset",
             params={"task_id": task_id},
             timeout=30,
         )
@@ -279,7 +279,7 @@ def run_episode(task_id: str) -> float:
 
         try:
             result_resp = requests.post(
-                f"{ENV_SERVER_URL}/step",
+                f"{ENV_BASE_URL}/step",
                 json=action,
                 timeout=30,
             )
@@ -321,7 +321,7 @@ def main():
     print(f"  LLM base URL:    {API_BASE_URL}")
     print(f"  Max steps:       {MAX_STEPS}")
     print(f"  Episodes/task:   {EPISODES_PER_TASK}")
-    print(f"  Environment URL: {ENV_SERVER_URL}")
+    print(f"  Environment URL: {ENV_BASE_URL}")
     print("-" * 50)
 
     all_scores = []
