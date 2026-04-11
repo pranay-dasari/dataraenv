@@ -20,12 +20,13 @@ MAX_STEPS = int(os.getenv("MAX_STEPS", "5"))
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.1"))
 EPISODES_PER_TASK = int(os.getenv("EPISODES_PER_TASK", "3"))
 
-client = OpenAI(
+
+
+try:
+    client = OpenAI(
     api_key=os.environ["HF_TOKEN"],
     base_url=os.environ["API_BASE_URL"],
 )
-
-try:
     response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[{"role": "user", "content": "hi"}],
